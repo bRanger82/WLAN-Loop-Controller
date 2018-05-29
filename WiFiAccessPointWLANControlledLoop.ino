@@ -10,6 +10,8 @@ const char *password = "test";
 const int GPIO0 = 0;
 const int GPIO2 = 2;
 
+String ThisIP = "192.168.4.1";
+
 ESP8266WebServer server(80);
 
 /* Go to http://192.168.4.1 in a web browser connected to this access point to see it. */
@@ -55,17 +57,18 @@ void redirectPage()
 	  show a timeout message because nothing was received back from this webserver.
 	*/
 	String s = "<head>";
-	s += "<meta http-equiv=\"refresh\" content=\"0;url=http://192.168.4.1\">"; 
+	s += "<meta http-equiv=\"refresh\" content=\"0;url=http://" + ThisIP + "\">"; 
 	s += "</html>";
 	server.send(200, "text/html", s);server.send(200, "text/html", s);
 }
 
 void handleGPIO(int PinNo, bool State)
 {
-	if (state)
+	if (State)
 	{
 		digitalWrite(PinNo, HIGH);
 	} else
+	{
 		digitalWrite(PinNo, LOW);
 	}
 	redirectPage();
@@ -105,6 +108,7 @@ void setup()
 	WiFi.softAP(ssid, password);
 
 	IPAddress myIP = WiFi.softAPIP();
+	ThisIP = myIP.toString();
 	Serial.print("AP IP address: ");
 	Serial.println(myIP);
 	server.on("/", handleRoot);
